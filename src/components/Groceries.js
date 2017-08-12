@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import {
+  Button,
   ListView,
   NetInfo,
   StyleSheet,
@@ -8,8 +9,12 @@ import {
   View
 } from 'react-native'
 import Item from './Item'
+import { Navigation } from 'react-native-navigation'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import * as ItemsActions from '../actions/items'
 
-export default class Groceries extends Component {
+class Groceries extends Component {
   constructor(props) {
     super(props)
 
@@ -19,7 +24,7 @@ export default class Groceries extends Component {
   }
 
   componentWillMount() {
-    this.dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+    this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
 
     this.props.loadOfflineItems()
 
@@ -40,20 +45,36 @@ export default class Groceries extends Component {
     console.log(this.props.connected)
     return (
       <Item name={rowData.title}
-            removable={this.props.connected}
-            onRemove={() => this._remove(rowData.id)} />
+        removable={this.props.connected}
+        onRemove={() => this._remove(rowData.id)} />
     )
   }
 
   _add() {
     this.props.addItem(this.state.newItem);
 
-    this.setState({newItem: ''})
+    this.setState({ newItem: '' })
     setTimeout(() => this.refs.newItem.focus(), 1)
   }
 
   _remove(id) {
     this.props.removeItem(id)
+  }
+
+  openItem() {
+    console.log(this.props);
+    // Navigation.showModal({
+    //   screen: "groceries.itemView", // unique ID registered with Navigation.registerScreen
+    //   title: "Item", // title of the screen as appears in the nav bar (optional)
+    //   passProps: {}, // simple serializable object that will pass as props to the modal (optional)
+    //   navigatorStyle: {}, // override the navigator style for the screen, see "Styling the navigator" below (optional)
+    //   navigatorButtons: {}, // override the nav buttons for the screen, see "Adding buttons to the navigator" below (optional)
+    //   animationType: 'slide-up' // 'none' / 'slide-up' , appear animation for the modal (optional, default 'slide-up')
+    // });
+    this.props.navigator.push({
+      screen: "groceries.itemView",
+      title: "Item View"
+    });
   }
 
   render() {
@@ -74,12 +95,12 @@ export default class Groceries extends Component {
       <View style={styles.container}>
         {readonlyMessage}
         <TextInput placeholder="Something delicious"
-                   style={styles.newItem}
-                   ref="newItem"
-                   editable={this.props.connected}
-                   value={this.state.newItem}
-                   onChangeText={(newItem) => this.setState({newItem})}
-                   onSubmitEditing={() => this._add()} />
+          style={styles.newItem}
+          ref="newItem"
+          editable={this.props.connected}
+          value={this.state.newItem}
+          onChangeText={(newItem) => this.setState({ newItem })}
+          onSubmitEditing={() => this._add()} />
 
 
         <ListView
@@ -87,10 +108,28 @@ export default class Groceries extends Component {
           enableEmptySections={true}
           renderRow={this.renderRow.bind(this)}
         />
+        <Button
+          onPress={() => this.openItem()}
+          title="Press Me" />
       </View>
     )
   }
 }
+
+function mapStateToProps(state) {
+  return {
+    onlineItems: state.items.onlineList,
+    offlineItems: state.items.offlineList,
+    connectionChecked: state.items.connectionChecked,
+    connected: state.items.connected
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(ItemsActions, dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Groceries)
 
 const styles = StyleSheet.create({
   container: {
