@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-  Animated,
+  // Animated,
   PanResponder,
   StyleSheet,
   Text,
@@ -11,92 +11,96 @@ export default class Item extends Component {
   constructor(props) {
     super(props)
 
-    this.state = {
-      scaleY: new Animated.Value(1),
-      pan: new Animated.ValueXY()
-    }
+    // this.state = {
+    //   scaleY: new Animated.Value(1),
+    //   pan: new Animated.ValueXY()
+    // }
   }
 
-  _reset() {
-    Animated.timing(this.state.pan, {
-      toValue: {x: 0, y: 0},
-      duration: 250
-    }).start()
-  }
+  // _reset() {
+  //   Animated.timing(this.state.pan, {
+  //     toValue: {x: 0, y: 0},
+  //     duration: 250
+  //   }).start()
+  // }
 
-  _checkForRemoval() {
-    this.state.pan.flattenOffset()
-    let x = this.state.pan.x._value
-    if (Math.abs(x) > 50) {
-      this.refs.wrapper.measure((ox, oy, width) => {
-        let newX
-        if (x > 0) {
-          newX = width
-        } else {
-          newX = -2 * width
-        }
+  // _checkForRemoval() {
+  //   this.state.pan.flattenOffset()
+  //   let x = this.state.pan.x._value
+  //   if (Math.abs(x) > 50) {
+  //     this.refs.wrapper.measure((ox, oy, width) => {
+  //       let newX
+  //       if (x > 0) {
+  //         newX = width
+  //       } else {
+  //         newX = -2 * width
+  //       }
 
-        Animated.sequence([
-          Animated.timing(this.state.pan, {
-            toValue: {x: newX, y: 0},
-            duration: 250
-          }),
-          Animated.timing(this.state.pan, {
-            toValue: {x: 0, y: 0},
-            duration: 0
-          })
-        ]).start(() => {
-          this.props.onRemove()
-        })
-      })
-    } else {
-      this._reset()
-    }
-  }
+  //       Animated.sequence([
+  //         Animated.timing(this.state.pan, {
+  //           toValue: {x: newX, y: 0},
+  //           duration: 250
+  //         }),
+  //         Animated.timing(this.state.pan, {
+  //           toValue: {x: 0, y: 0},
+  //           duration: 0
+  //         })
+  //       ]).start(() => {
+  //         this.props.onRemove()
+  //       })
+  //     })
+  //   } else {
+  //     this._reset()
+  //   }
+  // }
 
   componentWillMount() {
-    this._panResponder = PanResponder.create({
-      onMoveShouldSetResponderCapture: () => true,
-      onMoveShouldSetPanResponderCapture: () => this.props.removable,
+    // this._panResponder = PanResponder.create({
+    //   onMoveShouldSetResponderCapture: () => true,
+    //   onMoveShouldSetPanResponderCapture: () => this.props.removable,
 
-      onPanResponderGrant: () => {
-        this.state.pan.setOffset({x: this.state.pan.x._value})
-        this.state.pan.setValue({x: 0})
-      },
+    //   onPanResponderGrant: () => {
+    //     this.state.pan.setOffset({x: this.state.pan.x._value})
+    //     this.state.pan.setValue({x: 0})
+    //   },
 
-      onPanResponderMove: Animated.event([
-        null, {dx: this.state.pan.x, dy: this.state.pan.y}
-      ]),
+    //   onPanResponderMove: Animated.event([
+    //     null, {dx: this.state.pan.x, dy: this.state.pan.y}
+    //   ]),
 
-      onPanResponderRelease: () => this._checkForRemoval(),
+    //   onPanResponderRelease: () => this._checkForRemoval(),
 
-      onPanResponderTerminate: () => this._checkForRemoval()
-    })
+    //   onPanResponderTerminate: () => this._checkForRemoval()
+    // })
+  }
+
+  setNativeProps(nativeProps) {
+    this.refs.container.setNativeProps(nativeProps);
   }
 
   render() {
-    const { pan, scaleY } = this.state
-    const translateX = pan.x
+    // const { pan, scaleY } = this.state
+    // const translateX = pan.x
 
-    const animatedCardStyles = {transform: [{translateX}, {scaleY}]}
-    const wrapperStyles = {
-      backgroundColor: '#00AA00',
-      transform: [{scaleY}]
-    }
+    // const animatedCardStyles = {transform: [{translateX}, {scaleY}]}
+    // const wrapperStyles = {
+    //   backgroundColor: '#e50000',
+    //   transform: [{scaleY}]
+    // }
 
     return (
-      <Animated.View style={wrapperStyles}>
-        <View ref="wrapper" collapsable={false}>
-          <Animated.View style={animatedCardStyles} {...this._panResponder.panHandlers}>
+      // <Animated.View style={wrapperStyles}>
+        <View ref="container" collapsable={false}>
+          {/*<Animated.View style={animatedCardStyles} {...this._panResponder.panHandlers}>*/}
             <View style={styles.row}>
               <Text style={styles.text}>
                 {this.props.name}
               </Text>
             </View>
             <View style={styles.separator} />
-          </Animated.View>
+          {/*</Animated.View>*/}
         </View>
-      </Animated.View>
+      // </Animated.View>
     )
   }
 }

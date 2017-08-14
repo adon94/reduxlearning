@@ -6,7 +6,8 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  View
+  View,
+  TouchableHighlight
 } from 'react-native'
 import Item from './Item'
 import { Navigation } from 'react-native-navigation'
@@ -44,9 +45,11 @@ class Groceries extends Component {
   renderRow(rowData) {
     console.log(this.props.connected)
     return (
-      <Item name={rowData.title}
-        removable={this.props.connected}
-        onRemove={() => this._remove(rowData.id)} />
+      <TouchableHighlight onPress={() => this.openItem()} underlayColor="white">
+        <Item name={rowData.title}
+          removable={this.props.connected}
+          onRemove={() => this._remove(rowData.id)} />
+      </ TouchableHighlight>
     )
   }
 
@@ -94,7 +97,7 @@ class Groceries extends Component {
     return (
       <View style={styles.container}>
         {readonlyMessage}
-        <TextInput placeholder="Something delicious"
+        <TextInput placeholder="Add item"
           style={styles.newItem}
           ref="newItem"
           editable={this.props.connected}
